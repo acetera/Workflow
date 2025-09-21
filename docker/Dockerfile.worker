@@ -51,6 +51,9 @@ COPY src/worker/ /app/worker/
 COPY src/shared/ /app/shared/
 WORKDIR /app
 
+# Set Python path
+ENV PYTHONPATH=/app
+
 # GPU capability verification
 RUN nvidia-smi || echo "GPU check will be performed at runtime"
 

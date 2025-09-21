@@ -12,7 +12,7 @@ from datetime import datetime
 from typing import Optional, Dict, Any
 
 import httpx
-from .binary_manager import get_rckang_path, verify_rckang_available
+from worker.binary_manager import get_rckang_path, verify_rckang_available
 
 
 class PuzzleWorker:

@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # Orchestrator service (runs on your MacBook)
+  orchestrator:
+    image: warmlyale/puzzle-solver-orchestrator:latest
+    ports:
+      - "8000:8000"
+      - "8001:8001"  # WebSocket port
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - ENVIRONMENT=development
+    depends_on:
+      - redis
+    volumes:
+      - ../logs:/app/logs
+
+  # Redis for DP storage
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --maxmemory 8gb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+
+  # Worker template (commented out - will be deployed separately on GPU infrastructure)
+  # worker:
+  #   image: warmlyale/puzzle-solver-worker:latest
+  #   environment:
+  #     - ORCHESTRATOR_URL=http://orchestrator:8000
+  #     - WORKER_ID=local-worker-01
+  #     - GPU_MODEL=RTX-4090
+  #     - EXPECTED_SPEED=8000000000
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             count: 1
+  #             capabilities: [gpu]
+  #   depends_on:
+  #     - orchestrator
+
+volumes:
+  redis_data:
+
+# Example environment file (.env)
+# RCKANG_BINARY_URL=https://github.com/RetiredC/RCKangaroo/releases/download/v3.0/RCKangaroo
+# RCKANG_BINARY_PATH=/path/to/your/RCKangaroo.exe

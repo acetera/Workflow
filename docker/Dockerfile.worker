@@ -54,6 +54,9 @@ WORKDIR /app
 # Set Python path
 ENV PYTHONPATH=/app
 
+# Create necessary directories with proper permissions
+RUN mkdir -p /app/binaries && chmod 777 /app/binaries
+
 # GPU capability verification
 RUN nvidia-smi || echo "GPU check will be performed at runtime"
 
@@ -64,6 +67,7 @@ ENV CUDA_FORCE_PTX_JIT=0
 
 # Runtime user (security)
 RUN useradd -m -s /bin/bash worker
+RUN chown -R worker:worker /app
 USER worker
 
 ENTRYPOINT ["python3", "worker/main.py"]

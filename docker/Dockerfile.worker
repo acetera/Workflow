@@ -28,7 +28,11 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /tmp/build
 RUN git clone https://github.com/RetiredC/RCKangaroo.git
 WORKDIR /tmp/build/RCKangaroo
-RUN make gpu=1 CUDA=/usr/local/cuda
+
+# Find CUDA installation and build
+RUN find /usr/local -name "cuda_runtime.h" -type f 2>/dev/null || echo "CUDA headers not found in /usr/local"
+RUN ls -la /usr/local/cuda*/include/ || echo "No CUDA include directories found"
+RUN make gpu=1 CUDA=/usr/local/cuda-13.0
 RUN cp RCKangaroo /usr/local/bin/
 RUN chmod +x /usr/local/bin/RCKangaroo
 

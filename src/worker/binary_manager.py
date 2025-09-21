@@ -8,7 +8,7 @@ import hashlib
 import subprocess
 from typing import Optional
 from pathlib import Path
-import requests
+import httpx
 
 
 class BinaryManager:
@@ -53,12 +53,13 @@ class BinaryManager:
 
     def _download_binary(self, url: str):
         """Download binary from URL."""
-        response = requests.get(url, stream=True)
-        response.raise_for_status()
+        with httpx.Client() as client:
+            with client.stream("GET", url) as response:
+                response.raise_for_status()
 
-        with open(self.binary_path, 'wb') as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                f.write(chunk)
+                with open(self.binary_path, 'wb') as f:
+                    for chunk in response.iter_bytes(chunk_size=8192):
+                        f.write(chunk)
 
         os.chmod(self.binary_path, 0o755)
 

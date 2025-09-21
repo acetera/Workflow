@@ -26,6 +26,17 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Debug - Check directory structure
+      run: |
+        echo "Current directory:"
+        pwd
+        echo "Directory contents:"
+        ls -la
+        echo "Docker directory contents:"
+        ls -la docker/
+        echo "Dockerfile.worker exists:"
+        ls -la docker/Dockerfile.worker
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
@@ -50,7 +61,7 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: .
-        file: ./docker/Dockerfile.worker
+        file: docker/Dockerfile.worker
         platforms: linux/amd64
         push: true
         tags: ${{ steps.meta.outputs.tags }}

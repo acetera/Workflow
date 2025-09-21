@@ -1,5 +1,5 @@
 # Multi-stage build for RCKangaroo worker
-FROM nvidia/cuda:12.0-runtime-ubuntu22.04 as base
+FROM nvidia/cuda:12.2-runtime-ubuntu22.04 AS base
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -15,7 +15,7 @@ COPY requirements.txt /tmp/
 RUN pip3 install -r /tmp/requirements.txt
 
 # Binary acquisition stage
-FROM base as binary-stage
+FROM base AS binary-stage
 
 # Build RCKangaroo from source (most secure and reproducible)
 RUN apt-get update && apt-get install -y \
@@ -34,7 +34,7 @@ RUN cp RCKangaroo /usr/local/bin/
 RUN chmod +x /usr/local/bin/RCKangaroo
 
 # Final runtime stage
-FROM base as runtime
+FROM base AS runtime
 
 # Copy binary from build stage
 COPY --from=binary-stage /usr/local/bin/RCKangaroo /usr/local/bin/
